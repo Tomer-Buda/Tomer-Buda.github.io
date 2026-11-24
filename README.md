@@ -1,10 +1,10 @@
 # Tomer I. Buda — Engineering Projects Website
 
-A zero-dependency static portfolio website designed with a **Silicon & Hardware Engineering** aesthetic (dark obsidian + blueprint grid with a Light Datasheet theme toggle) to showcase RTL design, formal verification, low-level systems, and applied AI projects.
+A zero-dependency static portfolio website with a clean dark/light editorial design to showcase RTL design, formal verification, low-level systems, and applied AI projects.
 
 ## Features
 
-- **Curated Architecture Showcases:** Deep-dive datasheet modals with module breakdowns, highlights, CLI run instructions, and verification/gameplay visuals for:
+- **Curated Project Showcases:** Clean project cards with deep-dive details modals (module breakdowns, highlights, CLI run instructions, and verification/gameplay captures) for:
   - `RISC-V-CPU` — Single-Cycle RV32I Processor & SystemVerilog Assertions (SVA) Formal Verification
   - `SiliconLog` — Automated Post-Silicon Validation Dashboard
   - `Snake-Game` — Bare-Metal 16-Bit x86 Assembly Snake (INT 1Ch ISR, VGA `0B800h`, Port I/O)
@@ -12,8 +12,7 @@ A zero-dependency static portfolio website designed with a **Silicon & Hardware 
   - `formula-to-robdd` — Boolean Formula to ROBDD Visualizer
   - `GarminBot` — Serverless AI Endurance Coach (safe architecture-only showcase, marked Private Repo)
 - **Live GitHub Sync & Auto-Discovery:** Refreshes stars, forks, and push timestamps via the public GitHub REST API and automatically lists future public repositories you publish.
-- **At-a-Glance Profile Card:** Concise engineering overview in the hero highlighting Bar-Ilan University Hardware Major (GPA 86), FAU Erasmus+ exchange, core hardware/verification stack, and quick links.
-- **Smart Resume Button:** Automatically opens/downloads `assets/Tomer_Buda_Resume.pdf` once you place it there, and displays a print-ready interactive CV summary until then.
+- **PDF Resume Integration:** Direct open & download of `assets/Tomer_Buda_Resume.pdf`, plus a built-in print-ready CV fallback.
 
 ## Quick Customization
 
