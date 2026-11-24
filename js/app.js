@@ -1,5 +1,5 @@
-import { siteConfig } from "../data/site-config.js";
-import { curatedProjects, categoryLabels } from "../data/projects.js";
+import { siteConfig } from "../data/site-config.js?v=20261124b";
+import { curatedProjects, categoryLabels } from "../data/projects.js?v=20261124b";
 
 const LANGUAGE_COLORS = {
   Verilog: "#d97706",

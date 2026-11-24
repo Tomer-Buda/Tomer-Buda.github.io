@@ -305,9 +305,9 @@ export const curatedProjects = [
 ];
 
 export const categoryLabels = {
-  all: "All Projects",
+  all: "All",
   rtl: "RTL & Hardware",
-  verification: "Verification & Formal",
-  systems: "Systems & Low-Level",
+  verification: "Verification",
+  systems: "Systems",
   ai: "AI & Automation",
 };

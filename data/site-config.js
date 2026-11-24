@@ -53,7 +53,7 @@ export const siteConfig = {
     },
     {
       code: "02 // VERIF",
-      title: "Verification & Formal Methods",
+      title: "Verification & Formal",
       accent: "emerald",
       items: [
         "SystemVerilog Assertions (SVA)",

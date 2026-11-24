@@ -5,6 +5,7 @@
 
 :root,
 [data-theme="dark"] {
+  color-scheme: dark;
   --bg: #0c0e12;
   --surface: #13161c;
   --surface-elevated: #171b22;
@@ -30,6 +31,7 @@
 }
 
 [data-theme="light"] {
+  color-scheme: light;
   --bg: #ffffff;
   --surface: #f9fafb;
   --surface-elevated: #ffffff;
@@ -285,17 +287,21 @@ img {
 }
 
 .btn-text {
-  background: none;
-  border: none;
-  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 5px 10px;
+  border-radius: 6px;
   color: var(--accent);
   font-size: 0.82rem;
   font-weight: 500;
+  line-height: 1.2;
   cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .btn-text:hover {
-  text-decoration: underline;
+  background: var(--accent-soft);
+  border-color: var(--accent-border);
 }
 
 .icon-btn {
@@ -384,7 +390,7 @@ img {
 .sync-controls {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   font-size: 0.82rem;
   color: var(--text-muted);
 }
@@ -394,35 +400,38 @@ img {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 24px;
+  row-gap: 14px;
+  column-gap: 16px;
+  margin-bottom: 28px;
   flex-wrap: wrap;
 }
 
 .filter-pills {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 
 .filter-pill {
+  height: 36px;
   border: 1px solid var(--border);
   background: transparent;
   color: var(--text-secondary);
-  padding: 6px 12px;
-  border-radius: 7px;
+  padding: 0 13px;
+  border-radius: 8px;
   font-size: 0.83rem;
   font-weight: 500;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .filter-pill:hover {
   color: var(--text);
   border-color: var(--border-strong);
+  background: var(--surface);
 }
 
 .filter-pill.active {
@@ -440,44 +449,71 @@ img {
 .toolbar-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .search-box {
   position: relative;
-  display: flex;
+  display: inline-flex;
   align-items: center;
 }
 
 .search-icon {
   position: absolute;
-  left: 11px;
+  left: 12px;
   color: var(--text-muted);
   pointer-events: none;
 }
 
 .search-box input {
-  width: 230px;
-  padding: 7px 12px 7px 32px;
-  border-radius: 7px;
+  height: 36px;
+  width: 224px;
+  padding: 0 12px 0 36px;
+  border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--surface);
+  color: var(--text);
   font-size: 0.84rem;
+  line-height: 1;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.search-box input::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
 }
 
 .search-box input:focus {
-  border-color: var(--border-strong);
+  border-color: var(--accent);
+  background: var(--surface-elevated);
   outline: none;
 }
 
+.sort-box {
+  display: inline-flex;
+  align-items: center;
+}
+
 .sort-box select {
-  padding: 7px 11px;
-  border-radius: 7px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--surface);
+  color: var(--text);
   font-size: 0.83rem;
-  color: var(--text-secondary);
   cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.sort-box select:hover {
+  border-color: var(--border-strong);
+}
+
+.sort-box select:focus {
+  border-color: var(--accent);
+  outline: none;
 }
 
 /* Projects Grid — Clean Typographic Cards */
@@ -1095,12 +1131,12 @@ img {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .lightbox-frame img {
   max-width: 90vw;
-  max-height: 78vh;
+  max-height: 76vh;
   border-radius: 10px;
   border: 1px solid var(--border-strong);
   box-shadow: var(--shadow-lg);
@@ -1114,9 +1150,7 @@ img {
 }
 
 .lightbox-close {
-  position: absolute;
-  top: -14px;
-  right: -14px;
+  align-self: flex-end;
   background: var(--surface-elevated);
 }
 
@@ -1169,6 +1203,11 @@ img {
 
   .toolbar-right {
     width: 100%;
+  }
+
+  .filter-pill {
+    padding: 0 10px;
+    font-size: 0.8rem;
   }
 
   .search-box {
