@@ -12,7 +12,7 @@ A zero-dependency static portfolio website designed with a **Silicon & Hardware 
   - `formula-to-robdd` — Boolean Formula to ROBDD Visualizer
   - `GarminBot` — Serverless AI Endurance Coach (safe architecture-only showcase, marked Private Repo)
 - **Live GitHub Sync & Auto-Discovery:** Refreshes stars, forks, and push timestamps via the public GitHub REST API and automatically lists future public repositories you publish.
-- **Interactive Logic Analyzer Hero:** Switchable hardware timing waveforms (`RV32I`, `SVA`, `x86 I/O`).
+- **At-a-Glance Profile Card:** Concise engineering overview in the hero highlighting Bar-Ilan University Hardware Major (GPA 86), FAU Erasmus+ exchange, core hardware/verification stack, and quick links.
 - **Smart Resume Button:** Automatically opens/downloads `assets/Tomer_Buda_Resume.pdf` once you place it there, and displays a print-ready interactive CV summary until then.
 
 ## Quick Customization

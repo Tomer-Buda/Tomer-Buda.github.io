@@ -1,6 +1,6 @@
 import { siteConfig } from "../data/site-config.js";
 import { curatedProjects, categoryLabels } from "../data/projects.js";
-import { renderHeroWaveform, getProjectVisualSvg } from "./visuals.js";
+import { getProjectVisualSvg } from "./visuals.js";
 
 const LANGUAGE_COLORS = {
   Verilog: "#f59e0b",
@@ -944,34 +944,54 @@ function toggleTheme() {
   showToast(`Switched to ${next === "dark" ? "Dark Silicon" : "Light Datasheet"} theme`);
 }
 
-function initWaveformPanel() {
-  const screen = document.getElementById("hero-waveform");
-  const caption = document.getElementById("scope-caption");
-  const badge = document.getElementById("scope-badge");
-  const tabs = document.querySelectorAll(".scope-tab");
-  if (!screen) return;
+function renderProfileCard() {
+  const list = document.getElementById("profile-spec-list");
+  if (!list) return;
 
-  const setPreset = (key) => {
-    const preset = renderHeroWaveform(screen, key);
-    if (caption) caption.textContent = preset.caption;
-    if (badge) {
-      badge.textContent = preset.badge;
-      badge.style.background = `var(--${preset.badgeTone}-soft, var(--emerald-soft))`;
-      badge.style.color = `var(--${preset.badgeTone}, var(--emerald))`;
-      badge.style.borderColor = `var(--${preset.badgeTone}-border, var(--emerald-border))`;
-    }
-    tabs.forEach((btn) => {
-      const isMatch = btn.dataset.preset === key;
-      btn.classList.toggle("active", isMatch);
-      btn.setAttribute("aria-selected", String(isMatch));
-    });
-  };
+  const primaryEdu = siteConfig.education?.[0];
+  const exchangeEdu = siteConfig.education?.[1];
 
-  setPreset("riscv");
+  const rows = [
+    {
+      label: "Education",
+      value: primaryEdu ? primaryEdu.institution : "Bar-Ilan University",
+      sub: primaryEdu ? `${primaryEdu.degree} · ${primaryEdu.meta}` : "",
+    },
+    {
+      label: "Exchange",
+      value: exchangeEdu ? "FAU Erlangen-Nürnberg, Germany" : "",
+      sub: exchangeEdu ? `Erasmus+ Scholarship (${exchangeEdu.period})` : "",
+    },
+    {
+      label: "Focus",
+      value: "RTL Design, Formal Verification & Systems",
+      sub: "FPGA · VLSI · SVA · nuXmv · Bare-Metal",
+    },
+    {
+      label: "Languages",
+      value: "SystemVerilog, Verilog, x86 ASM, C/C++, Python",
+      sub: "EDA: Cadence Virtuoso · Riviera-PRO · Keil uVision",
+    },
+    {
+      label: "Location",
+      value: siteConfig.location,
+      sub: (siteConfig.spokenLanguages || []).map((l) => `${l.name} (${l.level})`).join(" · "),
+    },
+  ].filter((r) => r.value);
 
-  tabs.forEach((btn) => {
-    btn.addEventListener("click", () => setPreset(btn.dataset.preset));
-  });
+  list.innerHTML = rows
+    .map(
+      (r) => `
+      <div class="profile-spec-row">
+        <dt>${escapeHtml(r.label)}</dt>
+        <dd>
+          <span>${escapeHtml(r.value)}</span>
+          ${r.sub ? `<span class="profile-spec-sub">${escapeHtml(r.sub)}</span>` : ""}
+        </dd>
+      </div>
+    `
+    )
+    .join("");
 }
 
 function bindEvents() {
@@ -1102,7 +1122,7 @@ function bindEvents() {
 
 function init() {
   applySiteConfig();
-  initWaveformPanel();
+  renderProfileCard();
   renderStackMatrix();
   renderBackgroundSection();
   updateStats();

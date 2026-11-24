@@ -220,27 +220,35 @@
           </div>
         </div>
 
-        <!-- Hardware Logic Analyzer Hero Panel -->
-        <aside class="scope-card" aria-label="Interactive hardware signal telemetry preview">
-          <div class="scope-header">
-            <div class="scope-title">
-              <span class="scope-led" aria-hidden="true"></span>
-              <span>LOGIC_ANALYZER // CH0–CH3</span>
-            </div>
-            <div class="scope-tabs" role="tablist" aria-label="Waveform presets">
-              <button class="scope-tab active" data-preset="riscv" role="tab" aria-selected="true" type="button">RV32I</button>
-              <button class="scope-tab" data-preset="sva" role="tab" aria-selected="false" type="button">SVA</button>
-              <button class="scope-tab" data-preset="x86" role="tab" aria-selected="false" type="button">x86 I/O</button>
-            </div>
+        <!-- At a Glance Profile Card -->
+        <aside class="profile-card" aria-label="Engineer profile at a glance">
+          <div class="profile-card-header">
+            <span class="profile-card-eyebrow">PROFILE // AT A GLANCE</span>
+            <span class="profile-status-pill">4th Year · Hardware</span>
           </div>
 
-          <div class="scope-screen" id="hero-waveform">
-            <!-- Rendered dynamically by js/visuals.js -->
-          </div>
+          <dl class="profile-spec-list" id="profile-spec-list">
+            <!-- Populated dynamically from data/site-config.js -->
+          </dl>
 
-          <div class="scope-footer">
-            <span class="scope-caption" id="scope-caption">Single-cycle RV32I fetch → decode → ALU → writeback</span>
-            <span class="scope-badge" id="scope-badge">SVA: PASS</span>
+          <div class="profile-card-footer">
+            <button class="btn btn-xs btn-primary resume-trigger" type="button">Resume PDF</button>
+            <a
+              class="btn btn-xs btn-outline linkedin-link"
+              href="https://www.linkedin.com/in/tomer-buda/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LinkedIn ↗
+            </a>
+            <a
+              class="btn btn-xs btn-outline github-link"
+              href="https://github.com/Tomer-Buda"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub ↗
+            </a>
           </div>
         </aside>
       </div>

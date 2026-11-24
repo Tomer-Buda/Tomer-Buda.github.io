@@ -549,8 +549,8 @@ img {
   color: var(--emerald);
 }
 
-/* Logic Analyzer Scope Card */
-.scope-card {
+/* At a Glance Profile Card */
+.profile-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -559,7 +559,7 @@ img {
   position: relative;
 }
 
-.scope-card::before {
+.profile-card::before {
   content: "";
   position: absolute;
   top: 0;
@@ -569,95 +569,28 @@ img {
   background: linear-gradient(90deg, var(--accent), var(--emerald), var(--cyan));
 }
 
-.scope-header {
-  padding: 14px 16px;
+.profile-card-header {
+  padding: 15px 20px;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
 }
 
-.scope-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.profile-card-eyebrow {
   font-family: "JetBrains Mono", monospace;
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   color: var(--text-secondary);
 }
 
-.scope-led {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
-.scope-tabs {
-  display: flex;
-  gap: 4px;
-  background: var(--bg);
-  padding: 3px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-}
-
-.scope-tab {
-  border: none;
-  background: transparent;
-  padding: 4px 8px;
-  border-radius: 6px;
+.profile-status-pill {
   font-family: "JetBrains Mono", monospace;
   font-size: 0.68rem;
   font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.scope-tab.active {
-  background: var(--surface-elevated);
-  color: var(--accent);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-}
-
-.scope-screen {
-  padding: 16px;
-  background: var(--svg-bg);
-  min-height: 245px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.scope-screen svg {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.scope-footer {
-  padding: 12px 16px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.scope-caption {
-  font-family: "JetBrains Mono", monospace;
-  font-size: 0.72rem;
-  color: var(--text-secondary);
-}
-
-.scope-badge {
-  font-family: "JetBrains Mono", monospace;
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 3px 8px;
+  padding: 3px 9px;
   border-radius: 6px;
   background: var(--emerald-soft);
   color: var(--emerald);
@@ -665,7 +598,65 @@ img {
   white-space: nowrap;
 }
 
-/* Waveform subtle sweep */
+.profile-spec-list {
+  margin: 0;
+  padding: 8px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-spec-row {
+  display: grid;
+  grid-template-columns: 108px minmax(0, 1fr);
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: baseline;
+}
+
+.profile-spec-row:last-child {
+  border-bottom: none;
+}
+
+.profile-spec-row dt {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.profile-spec-row dd {
+  margin: 0;
+  font-size: 0.87rem;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.profile-spec-sub {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.profile-spec-highlight {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.74rem;
+  color: var(--accent);
+}
+
+.profile-card-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-alt);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Subtle animation for card schematic bus traces */
 @keyframes wave-dash {
   to { stroke-dashoffset: -48; }
 }
@@ -673,15 +664,6 @@ img {
 .wave-animate {
   stroke-dasharray: 8 4;
   animation: wave-dash 2.2s linear infinite;
-}
-
-@keyframes scan-pulse {
-  0%, 100% { opacity: 0.25; }
-  50% { opacity: 0.85; }
-}
-
-.scope-scanline {
-  animation: scan-pulse 3s ease-in-out infinite;
 }
 
 /* Section Headers */
