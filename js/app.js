@@ -1,17 +1,22 @@
 import { siteConfig } from "../data/site-config.js";
 import { curatedProjects, categoryLabels } from "../data/projects.js";
-import { getProjectVisualSvg } from "./visuals.js";
 
 const LANGUAGE_COLORS = {
-  Verilog: "#f59e0b",
-  SystemVerilog: "#10b981",
-  Python: "#38bdf8",
-  "C++": "#ec4899",
+  Verilog: "#d97706",
+  SystemVerilog: "#059669",
+  Python: "#3b82f6",
+  "C++": "#db2777",
   C: "#64748b",
-  Assembly: "#34d399",
-  JavaScript: "#facc15",
-  TypeScript: "#3b82f6",
-  Rust: "#fb923c",
+  Assembly: "#10b981",
+  JavaScript: "#eab308",
+  TypeScript: "#2563eb",
+};
+
+const CATEGORY_DISPLAY = {
+  rtl: "RTL & Formal Verification",
+  verification: "Verification & Formal Methods",
+  systems: "Low-Level Systems & Architecture",
+  ai: "Applied AI & Automation",
 };
 
 const state = {
@@ -57,7 +62,7 @@ function showToast(message) {
   clearTimeout(state.toastTimer);
   state.toastTimer = setTimeout(() => {
     toast.classList.add("hidden");
-  }, 2600);
+  }, 2400);
 }
 
 function inferCategoryFromRepo(repo) {
@@ -77,23 +82,24 @@ function inferCategoryFromRepo(repo) {
 }
 
 /* ============================================================================
- * Site Config & Static Sections Rendering
+ * Static Content & Config Binding
  * ============================================================================ */
 
 function applySiteConfig() {
-  document.title = `${siteConfig.name} — Hardware, Verification & Systems Projects`;
+  document.title = `${siteConfig.name} — Computer Engineering Portfolio`;
 
   const setText = (id, text) => {
     const el = document.getElementById(id);
     if (el) el.textContent = text;
   };
 
-  setText("brand-monogram", siteConfig.monogram);
   setText("brand-name", siteConfig.name);
-  setText("hero-role", siteConfig.role);
-  setText("hero-headline", siteConfig.headline);
+  setText("hero-name", siteConfig.name);
+  setText("hero-role", "Computer Engineering (Hardware Major) · Bar-Ilan University");
   setText("hero-bio", siteConfig.bio);
   setText("footer-name", siteConfig.name);
+  setText("footer-location", siteConfig.location);
+  setText("footer-year", String(new Date().getFullYear()));
   setText("github-handle", formatHandle(siteConfig.githubUrl));
   setText("linkedin-handle", formatHandle(siteConfig.linkedinUrl));
 
@@ -118,20 +124,19 @@ function applySiteConfig() {
   }
 }
 
-function renderStackMatrix() {
+function renderSkillsSection() {
   const grid = document.getElementById("stack-grid");
   if (!grid) return;
 
   grid.innerHTML = siteConfig.skillGroups
     .map(
       (group) => `
-      <article class="stack-card" data-accent="${escapeHtml(group.accent)}">
-        <span class="stack-code">${escapeHtml(group.code)}</span>
+      <div class="skill-group">
         <h3>${escapeHtml(group.title)}</h3>
-        <ul class="stack-list">
+        <ul class="skill-list">
           ${group.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
         </ul>
-      </article>
+      </div>
     `
     )
     .join("");
@@ -147,7 +152,7 @@ function renderBackgroundSection() {
       <article class="bg-card">
         <div class="bg-card-top">
           <span class="bg-period">${escapeHtml(edu.period)} · ${escapeHtml(edu.location)}</span>
-          ${edu.meta ? `<span class="bg-meta-pill">${escapeHtml(edu.meta)}</span>` : ""}
+          ${edu.meta ? `<span class="bg-badge">${escapeHtml(edu.meta)}</span>` : ""}
         </div>
         <h3>${escapeHtml(edu.degree)}</h3>
         <p class="bg-org">${escapeHtml(edu.institution)}</p>
@@ -173,7 +178,7 @@ function renderBackgroundSection() {
           <span class="tech-tag">${escapeHtml(exp.org)}</span>
         </div>
         <h3>${escapeHtml(exp.role)}</h3>
-        <ul class="card-highlights">
+        <ul class="card-bullets">
           ${(exp.bullets || []).map((b) => `<li>${escapeHtml(b)}</li>`).join("")}
         </ul>
       </article>
@@ -184,17 +189,12 @@ function renderBackgroundSection() {
   const langCard = siteConfig.spokenLanguages?.length
     ? `
       <article class="bg-card">
-        <div class="bg-card-top">
-          <span class="bg-period">SPOKEN LANGUAGES</span>
-        </div>
-        <div class="lang-row">
+        <h3>Languages</h3>
+        <div class="languages-bar">
           ${siteConfig.spokenLanguages
             .map(
               (l) => `
-            <div class="lang-chip">
-              <span>${escapeHtml(l.name)}</span>
-              <span>${escapeHtml(l.level)}</span>
-            </div>
+            <span class="lang-item"><strong>${escapeHtml(l.name)}</strong> — ${escapeHtml(l.level)}</span>
           `
             )
             .join("")}
@@ -204,28 +204,20 @@ function renderBackgroundSection() {
     : "";
 
   grid.innerHTML = `
-    <div class="bg-column">${eduCards}</div>
-    <div class="bg-column">${expCards}${langCard}</div>
+    <div class="bg-column">
+      <p class="bg-group-label">Education</p>
+      ${eduCards}
+    </div>
+    <div class="bg-column">
+      <p class="bg-group-label">Experience</p>
+      ${expCards}
+      ${langCard}
+    </div>
   `;
 }
 
-function updateStats() {
-  const projEl = document.getElementById("stat-projects");
-  const langEl = document.getElementById("stat-languages");
-  if (projEl) projEl.textContent = String(state.projects.length);
-
-  if (langEl) {
-    const langs = new Set();
-    state.projects.forEach((p) => {
-      if (p.primaryLanguage) langs.add(p.primaryLanguage);
-      (p.languages || []).forEach((l) => langs.add(l));
-    });
-    langEl.textContent = String(langs.size);
-  }
-}
-
 /* ============================================================================
- * Filters & Project Grid Rendering
+ * Filters & Clean Typographic Project Cards
  * ============================================================================ */
 
 function renderFilterPills() {
@@ -269,7 +261,6 @@ function getFilteredProjects() {
     const searchable = [
       project.title,
       project.repoName,
-      project.shortTag,
       project.summary,
       project.overview,
       project.primaryLanguage,
@@ -288,7 +279,6 @@ function getFilteredProjects() {
   } else if (state.sortBy === "name") {
     list = [...list].sort((a, b) => a.title.localeCompare(b.title));
   } else {
-    // Featured order: preserve curated priority, then push recently updated auto-discovered repos
     list = [...list].sort((a, b) => {
       if (a.id === "RISC-V-CPU") return -1;
       if (b.id === "RISC-V-CPU") return 1;
@@ -313,130 +303,80 @@ function renderProjects() {
   }
 
   empty.classList.add("hidden");
-  const showFlagship =
-    state.activeCategory === "all" &&
-    !state.searchQuery.trim() &&
-    state.sortBy === "featured" &&
-    filtered.length % 2 === 1;
 
   grid.innerHTML = filtered
-    .map((project, index) => {
-      const isFlagship = showFlagship && index === 0 && project.featured;
-      const langColor = LANGUAGE_COLORS[project.primaryLanguage] || "#94a3b8";
+    .map((project) => {
+      const langColor = LANGUAGE_COLORS[project.primaryLanguage] || "#64748b";
+      const domainLabel = CATEGORY_DISPLAY[project.category] || "Engineering";
+      const visLabel =
+        project.visibility === "private"
+          ? "Private repository"
+          : project.syncedFromGithub
+            ? "Synced from GitHub"
+            : formatDate(project.pushedAt);
 
-      let visClass = "vis-public";
-      let visLabel = "Public · GitHub";
-      if (project.visibility === "private") {
-        visClass = "vis-private";
-        visLabel = "Private Repo";
-      } else if (project.syncedFromGithub) {
-        visClass = "vis-synced";
-        visLabel = "Synced · GitHub";
-      }
-
-      const fallbackSvg = getProjectVisualSvg(project.visualType, project.title);
-      const visualContent = project.previewImageUrl
-        ? `<img
-             class="card-visual-img"
-             src="${escapeHtml(project.previewImageUrl)}"
-             alt="${escapeHtml(project.title)} preview"
-             loading="lazy"
-             data-fallback-type="${escapeHtml(project.visualType || "generic")}"
-           />`
-        : fallbackSvg;
-
-      const highlightsBlock =
-        isFlagship && project.highlights?.length
-          ? `<ul class="card-highlights">
-               ${project.highlights
-                 .slice(0, 3)
-                 .map((h) => `<li>${escapeHtml(h)}</li>`)
-                 .join("")}
-             </ul>`
-          : "";
+      const bullets = (project.highlights || []).slice(0, 2);
+      const bulletsHtml = bullets.length
+        ? `<ul class="card-bullets">
+             ${bullets.map((b) => `<li>${escapeHtml(b)}</li>`).join("")}
+           </ul>`
+        : "";
 
       const starsText =
         project.visibility === "public" && typeof project.stars === "number" && project.stars > 0
           ? `<span>★ ${project.stars}</span>`
           : "";
 
-      const updatedText = project.pushedAt ? `<span>Updated ${escapeHtml(formatDate(project.pushedAt))}</span>` : "";
-
       const repoAction =
         project.visibility === "private" || !project.githubUrl
-          ? `<span class="private-pill" title="Source withheld for privacy">Private Source</span>`
+          ? `<span class="private-note">Private source</span>`
           : `<a class="btn btn-xs btn-outline" href="${escapeHtml(project.githubUrl)}" target="_blank" rel="noopener noreferrer">
-               <span>GitHub</span>
-               <svg class="icon icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                 <polyline points="15 3 21 3 21 9"/>
-                 <line x1="10" y1="14" x2="21" y2="3"/>
-               </svg>
+               GitHub ↗
              </a>`;
 
       return `
-        <article class="project-card ${isFlagship ? "card-flagship" : ""}">
-          <div class="card-visual">
-            ${visualContent}
-            <div class="card-visual-badges">
-              <span class="tag-chip">${escapeHtml(project.shortTag)}</span>
-              <span class="vis-badge ${visClass}">${escapeHtml(visLabel)}</span>
-            </div>
+        <article class="project-card">
+          <div class="card-top-meta">
+            <span class="card-domain">${escapeHtml(domainLabel)}</span>
+            <span class="card-vis">${escapeHtml(visLabel)}</span>
           </div>
 
-          <div class="card-body">
-            <div class="card-title-row">
-              <h3 class="card-title">${escapeHtml(project.title)}</h3>
+          <h3 class="card-title">${escapeHtml(project.title)}</h3>
+          <p class="card-summary">${escapeHtml(project.summary)}</p>
+          ${bulletsHtml}
+
+          <div class="tech-tags">
+            ${(project.techStack || [])
+              .slice(0, 5)
+              .map((tag) => `<span class="tech-tag">${escapeHtml(tag)}</span>`)
+              .join("")}
+          </div>
+
+          <div class="card-footer">
+            <div class="card-meta">
+              ${
+                project.primaryLanguage
+                  ? `<span><span class="lang-dot" style="background:${langColor}"></span>${escapeHtml(project.primaryLanguage)}</span>`
+                  : ""
+              }
+              ${starsText}
             </div>
 
-            <p class="card-summary">${escapeHtml(project.summary)}</p>
-            ${highlightsBlock}
-
-            <div class="tech-tags">
-              ${(project.techStack || [])
-                .slice(0, isFlagship ? 6 : 4)
-                .map((tag) => `<span class="tech-tag">${escapeHtml(tag)}</span>`)
-                .join("")}
-            </div>
-
-            <div class="card-footer">
-              <div class="card-meta">
-                ${
-                  project.primaryLanguage
-                    ? `<span><span class="lang-dot" style="background:${langColor}"></span>${escapeHtml(project.primaryLanguage)}</span>`
-                    : ""
-                }
-                ${starsText}
-                ${updatedText}
-              </div>
-
-              <div class="card-actions">
-                <button class="btn btn-xs btn-secondary inspect-btn" type="button" data-project-id="${escapeHtml(project.id)}">
-                  Inspect Architecture
-                </button>
-                ${repoAction}
-              </div>
+            <div class="card-actions">
+              <button class="btn btn-xs btn-outline inspect-btn" type="button" data-project-id="${escapeHtml(project.id)}">
+                Details
+              </button>
+              ${repoAction}
             </div>
           </div>
         </article>
       `;
     })
     .join("");
-
-  // Attach graceful image fallbacks for external preview images (e.g. offline mode)
-  grid.querySelectorAll(".card-visual-img").forEach((img) => {
-    img.addEventListener("error", () => {
-      const parent = img.parentElement;
-      const fallbackType = img.getAttribute("data-fallback-type") || "generic";
-      const badges = parent.querySelector(".card-visual-badges");
-      parent.innerHTML = getProjectVisualSvg(fallbackType);
-      if (badges) parent.appendChild(badges);
-    });
-  });
 }
 
 /* ============================================================================
- * Project Architecture Datasheet Modal & Lightbox
+ * Project Details Modal & Lightbox
  * ============================================================================ */
 
 function openProjectModal(projectId) {
@@ -448,13 +388,24 @@ function openProjectModal(projectId) {
   const titleEl = document.getElementById("modal-title");
   const bodyEl = document.getElementById("modal-body");
 
-  tagEl.textContent = `${project.shortTag} // DATASHEET`;
+  tagEl.textContent = CATEGORY_DISPLAY[project.category] || "Project Details";
   titleEl.textContent = project.title;
+
+  const highlightsHtml = project.highlights?.length
+    ? `
+      <div class="modal-section">
+        <h3>Key Highlights</h3>
+        <ul class="card-bullets">
+          ${project.highlights.map((h) => `<li>${escapeHtml(h)}</li>`).join("")}
+        </ul>
+      </div>
+    `
+    : "";
 
   const modulesHtml = project.modules?.length
     ? `
       <div class="modal-section">
-        <h3>Module &amp; File Architecture</h3>
+        <h3>Architecture &amp; Modules</h3>
         <div class="module-list">
           ${project.modules
             .map(
@@ -467,17 +418,6 @@ function openProjectModal(projectId) {
             )
             .join("")}
         </div>
-      </div>
-    `
-    : "";
-
-  const highlightsHtml = project.highlights?.length
-    ? `
-      <div class="modal-section">
-        <h3>Key Engineering Highlights</h3>
-        <ul class="card-highlights">
-          ${project.highlights.map((h) => `<li>${escapeHtml(h)}</li>`).join("")}
-        </ul>
       </div>
     `
     : "";
@@ -513,12 +453,12 @@ function openProjectModal(projectId) {
   const runHtml = project.runCommand
     ? `
       <div class="modal-section">
-        <h3>${project.visibility === "private" ? "Repository Status" : "Quick Run / Simulation"}</h3>
+        <h3>${project.visibility === "private" ? "Access" : "Build & Run"}</h3>
         <div class="code-bar">
           <code>${escapeHtml(project.runCommand)}</code>
           ${
             project.visibility !== "private"
-              ? `<button class="btn-inline copy-cmd-btn" type="button" data-cmd="${escapeHtml(project.runCommand)}">Copy</button>`
+              ? `<button class="btn btn-xs btn-outline copy-cmd-btn" type="button" data-cmd="${escapeHtml(project.runCommand)}">Copy</button>`
               : ""
           }
         </div>
@@ -528,14 +468,14 @@ function openProjectModal(projectId) {
 
   const footerActions =
     project.visibility === "private" || !project.githubUrl
-      ? `<span class="private-pill">Private Personal Repository — Architecture Showcase Only</span>`
+      ? `<span class="private-note">Private personal repository — source withheld for privacy.</span>`
       : `
         <a class="btn btn-primary btn-sm" href="${escapeHtml(project.githubUrl)}" target="_blank" rel="noopener noreferrer">
-          Open Repository on GitHub ↗
+          View on GitHub ↗
         </a>
         ${
           project.homepageUrl
-            ? `<a class="btn btn-secondary btn-sm" href="${escapeHtml(project.homepageUrl)}" target="_blank" rel="noopener noreferrer">Live Demo ↗</a>`
+            ? `<a class="btn btn-outline btn-sm" href="${escapeHtml(project.homepageUrl)}" target="_blank" rel="noopener noreferrer">Live Demo ↗</a>`
             : ""
         }
       `;
@@ -562,7 +502,6 @@ function openProjectModal(projectId) {
     </div>
   `;
 
-  // Hide individual evidence cards cleanly if external raw images cannot load offline
   bodyEl.querySelectorAll(".evidence-card img").forEach((img) => {
     img.addEventListener("error", () => {
       const card = img.closest(".evidence-card");
@@ -603,7 +542,7 @@ function closeLightbox() {
 }
 
 /* ============================================================================
- * Resume PDF Detection & Interactive CV Fallback Modal
+ * Resume PDF Detection & Print Fallback
  * ============================================================================ */
 
 async function checkResumePdf() {
@@ -615,7 +554,7 @@ async function checkResumePdf() {
     const contentType = (res.headers.get("content-type") || "").toLowerCase();
     if (res.ok && (!contentType || contentType.includes("pdf") || contentType.includes("octet-stream"))) {
       state.resumePdfAvailable = true;
-      if (badge) badge.textContent = "PDF Ready";
+      if (badge) badge.textContent = "PDF (1 page)";
       if (dlLink) dlLink.classList.remove("hidden");
       return;
     }
@@ -624,7 +563,7 @@ async function checkResumePdf() {
   }
 
   state.resumePdfAvailable = false;
-  if (badge) badge.textContent = "Interactive CV";
+  if (badge) badge.textContent = "Web Summary";
 }
 
 function handleResumeTrigger() {
@@ -718,28 +657,22 @@ function openResumeModal() {
 
       <div class="modal-section">
         <h3>Education</h3>
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          ${educationHtml}
-        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;">${educationHtml}</div>
       </div>
 
       <div class="modal-section">
-        <h3>Engineering Projects</h3>
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          ${projectsSummary}
-        </div>
+        <h3>Projects</h3>
+        <div style="display:flex;flex-direction:column;gap:10px;">${projectsSummary}</div>
       </div>
 
       <div class="modal-section">
-        <h3>Professional Experience</h3>
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          ${experienceHtml}
-        </div>
+        <h3>Experience</h3>
+        <div style="display:flex;flex-direction:column;gap:10px;">${experienceHtml}</div>
       </div>
 
       <div class="modal-section">
-        <h3>Technical Skills &amp; Lab Equipment</h3>
-        <div style="display:flex;flex-direction:column;gap:8px;font-size:0.86rem;">
+        <h3>Skills &amp; Languages</h3>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:0.86rem;">
           ${skillsSummary}
           ${langsText ? `<div><strong>Languages:</strong> <span style="color:var(--text-secondary)">${escapeHtml(langsText)}</span></div>` : ""}
         </div>
@@ -768,21 +701,12 @@ function syncBodyModalLock() {
 }
 
 /* ============================================================================
- * Live GitHub API Sync + Future Repo Auto-Discovery
+ * Live GitHub Sync & Future Repo Auto-Discovery
  * ============================================================================ */
 
-function setSyncIndicator(mode, label, shortStat) {
-  const dot = document.querySelector(".sync-dot");
-  const text = document.getElementById("sync-status-text");
-  const statSync = document.getElementById("stat-sync");
-
-  if (dot) {
-    dot.classList.remove("syncing", "offline");
-    if (mode === "syncing") dot.classList.add("syncing");
-    if (mode === "offline") dot.classList.add("offline");
-  }
-  if (text) text.textContent = label;
-  if (statSync && shortStat) statSync.textContent = shortStat;
+function setSyncText(label) {
+  const el = document.getElementById("sync-status-text");
+  if (el) el.textContent = label;
 }
 
 function mergeGitHubRepos(repos) {
@@ -790,7 +714,6 @@ function mergeGitHubRepos(repos) {
     (siteConfig.githubSync.ignoredRepos || []).map((n) => n.toLowerCase())
   );
 
-  // Start from fresh curated clone so manual re-syncs never duplicate entries
   const merged = curatedProjects.map((p) => ({ ...p, syncedFromGithub: false }));
   const byRepoName = new Map();
   merged.forEach((p) => {
@@ -816,7 +739,6 @@ function mergeGitHubRepos(repos) {
 
     if (!siteConfig.githubSync.autoDiscoverNewRepos) return;
 
-    // Auto-discover any newly created public repository on GitHub!
     discoveredCount += 1;
     const topics = Array.isArray(repo.topics) ? repo.topics : [];
     const stack = [repo.language, ...topics.slice(0, 4)].filter(Boolean);
@@ -825,7 +747,6 @@ function mergeGitHubRepos(repos) {
       id: `gh-${repo.name}`,
       repoName: repo.name,
       title: repo.name.replace(/[-_]+/g, " "),
-      shortTag: `${(repo.language || "GITHUB").toUpperCase()} · AUTO-SYNCED`,
       category: inferCategoryFromRepo(repo),
       featured: false,
       visibility: "public",
@@ -837,13 +758,12 @@ function mergeGitHubRepos(repos) {
       stars: repo.stargazers_count || 0,
       forks: repo.forks_count || 0,
       pushedAt: repo.pushed_at || repo.created_at,
-      visualType: "generic",
       summary:
         repo.description ||
-        "Public repository automatically synced from GitHub. Open on GitHub to inspect source and documentation.",
+        "Public repository automatically synced from GitHub.",
       overview:
         repo.description ||
-        "This repository was automatically discovered via the GitHub REST API. Add a matching entry in data/projects.js to customize its architecture breakdown and schematic.",
+        "This repository was automatically discovered via the GitHub API.",
       highlights: [],
       modules: [],
       techStack: stack.length ? stack : ["GitHub"],
@@ -853,7 +773,6 @@ function mergeGitHubRepos(repos) {
   });
 
   state.projects = merged;
-  updateStats();
   renderFilterPills();
   renderProjects();
 
@@ -862,7 +781,7 @@ function mergeGitHubRepos(repos) {
 
 async function syncWithGitHub(forceRefresh = false) {
   if (!siteConfig.githubSync?.enabled || !siteConfig.githubUsername) {
-    setSyncIndicator("offline", "Static curated mode", "Static");
+    setSyncText("Curated projects");
     return;
   }
 
@@ -875,7 +794,7 @@ async function syncWithGitHub(forceRefresh = false) {
         const cached = JSON.parse(cachedRaw);
         if (Date.now() - cached.timestamp < siteConfig.githubSync.cacheTtlMs) {
           mergeGitHubRepos(cached.repos);
-          setSyncIndicator("live", `Synced @${siteConfig.githubUsername} (cached)`, "Live");
+          setSyncText(`Synced with @${siteConfig.githubUsername}`);
           return;
         }
       }
@@ -884,7 +803,7 @@ async function syncWithGitHub(forceRefresh = false) {
     }
   }
 
-  setSyncIndicator("syncing", `Syncing @${siteConfig.githubUsername}...`, "Syncing...");
+  setSyncText("Syncing with GitHub...");
 
   try {
     const url = `https://api.github.com/users/${encodeURIComponent(
@@ -894,42 +813,32 @@ async function syncWithGitHub(forceRefresh = false) {
       headers: { Accept: "application/vnd.github+json" },
     });
 
-    if (!res.ok) {
-      throw new Error(`GitHub API ${res.status}`);
-    }
-
+    if (!res.ok) throw new Error(`GitHub API ${res.status}`);
     const repos = await res.json();
     if (!Array.isArray(repos)) throw new Error("Unexpected response");
 
     try {
-      sessionStorage.setItem(
-        cacheKey,
-        JSON.stringify({ timestamp: Date.now(), repos })
-      );
+      sessionStorage.setItem(cacheKey, JSON.stringify({ timestamp: Date.now(), repos }));
     } catch {
-      // Ignore quota errors
+      // Ignore storage quota errors
     }
 
     const discovered = mergeGitHubRepos(repos);
-    const label =
+    setSyncText(
       discovered > 0
-        ? `Live synced (+${discovered} new from GitHub)`
-        : `Live synced with @${siteConfig.githubUsername}`;
-    setSyncIndicator("live", label, "Live");
+        ? `Synced with GitHub (+${discovered} new)`
+        : `Synced with @${siteConfig.githubUsername}`
+    );
 
-    if (forceRefresh) {
-      showToast("GitHub repository metadata refreshed");
-    }
+    if (forceRefresh) showToast("GitHub metadata refreshed");
   } catch {
-    setSyncIndicator("offline", "Curated showcase (GitHub API unavailable)", "Cached");
-    if (forceRefresh) {
-      showToast("Could not reach GitHub API — showing curated data");
-    }
+    setSyncText("Curated projects");
+    if (forceRefresh) showToast("Could not reach GitHub API");
   }
 }
 
 /* ============================================================================
- * Theme & Interactive Wiring
+ * Theme & Event Wiring
  * ============================================================================ */
 
 function toggleTheme() {
@@ -941,64 +850,11 @@ function toggleTheme() {
   } catch {
     // Ignore storage errors
   }
-  showToast(`Switched to ${next === "dark" ? "Dark Silicon" : "Light Datasheet"} theme`);
-}
-
-function renderProfileCard() {
-  const list = document.getElementById("profile-spec-list");
-  if (!list) return;
-
-  const primaryEdu = siteConfig.education?.[0];
-  const exchangeEdu = siteConfig.education?.[1];
-
-  const rows = [
-    {
-      label: "Education",
-      value: primaryEdu ? primaryEdu.institution : "Bar-Ilan University",
-      sub: primaryEdu ? `${primaryEdu.degree} · ${primaryEdu.meta}` : "",
-    },
-    {
-      label: "Exchange",
-      value: exchangeEdu ? "FAU Erlangen-Nürnberg, Germany" : "",
-      sub: exchangeEdu ? `Erasmus+ Scholarship (${exchangeEdu.period})` : "",
-    },
-    {
-      label: "Focus",
-      value: "RTL Design, Formal Verification & Systems",
-      sub: "FPGA · VLSI · SVA · nuXmv · Bare-Metal",
-    },
-    {
-      label: "Languages",
-      value: "SystemVerilog, Verilog, x86 ASM, C/C++, Python",
-      sub: "EDA: Cadence Virtuoso · Riviera-PRO · Keil uVision",
-    },
-    {
-      label: "Location",
-      value: siteConfig.location,
-      sub: (siteConfig.spokenLanguages || []).map((l) => `${l.name} (${l.level})`).join(" · "),
-    },
-  ].filter((r) => r.value);
-
-  list.innerHTML = rows
-    .map(
-      (r) => `
-      <div class="profile-spec-row">
-        <dt>${escapeHtml(r.label)}</dt>
-        <dd>
-          <span>${escapeHtml(r.value)}</span>
-          ${r.sub ? `<span class="profile-spec-sub">${escapeHtml(r.sub)}</span>` : ""}
-        </dd>
-      </div>
-    `
-    )
-    .join("");
 }
 
 function bindEvents() {
-  // Theme switcher
   document.getElementById("theme-toggle")?.addEventListener("click", toggleTheme);
 
-  // Filter pills (delegated)
   document.getElementById("filter-pills")?.addEventListener("click", (e) => {
     const pill = e.target.closest(".filter-pill");
     if (!pill) return;
@@ -1007,7 +863,6 @@ function bindEvents() {
     renderProjects();
   });
 
-  // Search & Sort
   const searchInput = document.getElementById("project-search");
   searchInput?.addEventListener("input", (e) => {
     state.searchQuery = e.target.value;
@@ -1030,19 +885,16 @@ function bindEvents() {
     renderProjects();
   });
 
-  // Sync refresh button
   document.getElementById("sync-refresh-btn")?.addEventListener("click", () => {
     syncWithGitHub(true);
   });
 
-  // Project inspect buttons (delegated)
   document.getElementById("projects-grid")?.addEventListener("click", (e) => {
     const btn = e.target.closest(".inspect-btn");
     if (!btn) return;
     openProjectModal(btn.dataset.projectId);
   });
 
-  // Project modal close & inner interactions (copy command / lightbox)
   document.getElementById("modal-close-btn")?.addEventListener("click", closeProjectModal);
   document.getElementById("project-modal")?.addEventListener("click", (e) => {
     if (e.target.id === "project-modal") {
@@ -1053,7 +905,7 @@ function bindEvents() {
     const copyBtn = e.target.closest(".copy-cmd-btn");
     if (copyBtn) {
       navigator.clipboard?.writeText(copyBtn.dataset.cmd || "").then(() => {
-        showToast("Command copied to clipboard");
+        showToast("Command copied");
       });
       return;
     }
@@ -1064,13 +916,11 @@ function bindEvents() {
     }
   });
 
-  // Lightbox close
   document.getElementById("lightbox-close-btn")?.addEventListener("click", closeLightbox);
   document.getElementById("lightbox-modal")?.addEventListener("click", (e) => {
     if (e.target.id === "lightbox-modal") closeLightbox();
   });
 
-  // Resume triggers & modal
   document.querySelectorAll(".resume-trigger").forEach((btn) => {
     btn.addEventListener("click", handleResumeTrigger);
   });
@@ -1082,7 +932,6 @@ function bindEvents() {
     window.print();
   });
 
-  // Copy email
   document.getElementById("copy-email-btn")?.addEventListener("click", () => {
     navigator.clipboard?.writeText(siteConfig.email).then(
       () => showToast(`Copied ${siteConfig.email}`),
@@ -1090,7 +939,6 @@ function bindEvents() {
     );
   });
 
-  // Keyboard shortcuts
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       const lb = document.getElementById("lightbox-modal");
@@ -1104,8 +952,7 @@ function bindEvents() {
     }
 
     const tag = (e.target?.tagName || "").toLowerCase();
-    const isTyping = tag === "input" || tag === "textarea" || tag === "select";
-    if (isTyping) return;
+    if (tag === "input" || tag === "textarea" || tag === "select") return;
 
     if (e.key === "/") {
       e.preventDefault();
@@ -1122,10 +969,8 @@ function bindEvents() {
 
 function init() {
   applySiteConfig();
-  renderProfileCard();
-  renderStackMatrix();
+  renderSkillsSection();
   renderBackgroundSection();
-  updateStats();
   renderFilterPills();
   renderProjects();
   bindEvents();
