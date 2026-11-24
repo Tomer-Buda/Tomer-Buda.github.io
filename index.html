@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" dir="ltr" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -22,31 +22,36 @@
     href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23111318'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-family='Inter,system-ui,sans-serif' font-weight='600' font-size='24' fill='%23f4f4f5'%3ETB%3C/text%3E%3C/svg%3E"
   />
 
-  <!-- Typography -->
+  <!-- Typography (Inter for EN, Heebo for crisp Hebrew, JetBrains Mono for code) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet"
   />
 
-  <!-- Prevent theme flash -->
+  <!-- Prevent theme & language direction flash before paint -->
   <script>
     (function () {
       try {
-        var saved = localStorage.getItem("tb-portfolio-theme");
-        var theme = saved === "light" || saved === "dark" ? saved : "dark";
+        var savedTheme = localStorage.getItem("tb-portfolio-theme");
+        var theme = savedTheme === "light" || savedTheme === "dark" ? savedTheme : "dark";
         document.documentElement.setAttribute("data-theme", theme);
+
+        var savedLang = localStorage.getItem("tb-portfolio-lang");
+        var lang = savedLang === "he" ? "he" : "en";
+        document.documentElement.setAttribute("lang", lang);
+        document.documentElement.setAttribute("dir", lang === "he" ? "rtl" : "ltr");
       } catch (e) {
         document.documentElement.setAttribute("data-theme", "dark");
       }
     })();
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=20261124b" />
+  <link rel="stylesheet" href="css/styles.css?v=20261125" />
 </head>
 <body>
-  <a class="skip-link" href="#projects">Skip to projects</a>
+  <a class="skip-link" id="skip-link" href="#projects">Skip to projects</a>
 
   <!-- Header -->
   <header class="site-header" id="top">
@@ -56,14 +61,14 @@
       </a>
 
       <nav class="nav-links" aria-label="Primary navigation">
-        <a href="#projects">Projects</a>
-        <a href="#skills">Skills</a>
-        <a href="#background">Background</a>
-        <a href="#contact">Contact</a>
+        <a href="#projects" id="nav-projects">Projects</a>
+        <a href="#skills" id="nav-skills">Skills</a>
+        <a href="#background" id="nav-background">Background</a>
+        <a href="#contact" id="nav-contact">Contact</a>
       </nav>
 
       <div class="header-actions">
-        <button class="btn btn-sm btn-outline resume-trigger" type="button">
+        <button class="btn btn-sm btn-outline resume-trigger" id="header-resume-btn" type="button">
           Resume
         </button>
 
@@ -94,6 +99,16 @@
         </a>
 
         <button
+          class="icon-btn lang-toggle-btn"
+          id="lang-toggle"
+          type="button"
+          aria-label="Switch to Hebrew"
+          title="Switch to Hebrew (עברית)"
+        >
+          עב
+        </button>
+
+        <button
           class="icon-btn"
           id="theme-toggle"
           type="button"
@@ -115,41 +130,45 @@
   <main>
     <!-- Clean Editorial Hero -->
     <section class="hero">
-      <div class="container hero-inner">
-        <p class="hero-kicker" id="hero-role">
-          Computer Engineering (Hardware Major) · Bar-Ilan University
-        </p>
+      <div class="container">
+        <div class="hero-inner">
+          <p class="hero-kicker" id="hero-role">
+            Computer Engineering (Hardware Major) · Bar-Ilan University
+          </p>
 
-        <h1 class="hero-title" id="hero-name">Tomer I. Buda</h1>
+          <h1 class="hero-title" id="hero-name">Tomer I. Buda</h1>
 
-        <p class="hero-bio" id="hero-bio">
-          4th-year Computer Engineering student (Computer Hardware Major, Bar-Ilan University) focused on digital hardware design (FPGA, RTL, VLSI), formal verification (SVA, nuXmv), and low-level systems programming.
-        </p>
+          <p class="hero-bio" id="hero-bio">
+            4th-year Computer Engineering student (Computer Hardware Major, Bar-Ilan University) focused on digital hardware design (FPGA, RTL, VLSI), formal verification (SVA, nuXmv), and low-level systems programming.
+          </p>
 
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="#projects">View Projects</a>
+          <div class="hero-actions">
+            <a class="btn btn-primary" id="hero-view-projects" href="#projects">View Projects</a>
 
-          <button class="btn btn-outline resume-trigger" type="button">
-            <span>Resume (PDF)</span>
-          </button>
+            <button class="btn btn-outline resume-trigger" id="hero-resume-btn" type="button">
+              Resume (PDF)
+            </button>
 
-          <a
-            class="btn btn-ghost linkedin-link"
-            href="https://www.linkedin.com/in/tomer-buda/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            LinkedIn ↗
-          </a>
+            <a
+              class="btn btn-ghost linkedin-link"
+              id="hero-linkedin-btn"
+              href="https://www.linkedin.com/in/tomer-buda/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LinkedIn ↗
+            </a>
 
-          <a
-            class="btn btn-ghost github-link"
-            href="https://github.com/Tomer-Buda"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            GitHub ↗
-          </a>
+            <a
+              class="btn btn-ghost github-link"
+              id="hero-github-btn"
+              href="https://github.com/Tomer-Buda"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub ↗
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -160,7 +179,7 @@
         <div class="section-head">
           <div>
             <h2 class="section-title" id="projects-heading">Selected Projects</h2>
-            <p class="section-sub">Hardware design, formal verification, systems programming, and applied automation.</p>
+            <p class="section-sub" id="projects-sub">Hardware design, formal verification, systems programming, and applied automation.</p>
           </div>
 
           <div class="sync-controls">
@@ -193,9 +212,9 @@
             <label class="sort-box">
               <span class="sr-only">Sort projects</span>
               <select id="project-sort" aria-label="Sort projects">
-                <option value="featured">Featured</option>
-                <option value="recent">Recently updated</option>
-                <option value="name">Alphabetical</option>
+                <option value="featured" id="sort-opt-featured">Featured</option>
+                <option value="recent" id="sort-opt-recent">Recently updated</option>
+                <option value="name" id="sort-opt-name">Alphabetical</option>
               </select>
             </label>
           </div>
@@ -206,8 +225,8 @@
         </div>
 
         <div class="empty-state hidden" id="projects-empty">
-          <p class="empty-title">No matching projects</p>
-          <p class="empty-sub">Adjust your search query or switch back to All Projects.</p>
+          <p class="empty-title" id="empty-title">No matching projects</p>
+          <p class="empty-sub" id="empty-sub">Adjust your search query or switch back to All.</p>
           <button class="btn btn-sm btn-outline" id="reset-filters-btn" type="button">Reset Filters</button>
         </div>
       </div>
@@ -219,7 +238,7 @@
         <div class="section-head">
           <div>
             <h2 class="section-title" id="skills-heading">Technical Skills</h2>
-            <p class="section-sub">Languages, EDA toolchains, verification methodologies, and bench instrumentation.</p>
+            <p class="section-sub" id="skills-sub">Languages, EDA toolchains, verification methodologies, and bench instrumentation.</p>
           </div>
         </div>
 
@@ -235,7 +254,7 @@
         <div class="section-head">
           <div>
             <h2 class="section-title" id="background-heading">Education &amp; Experience</h2>
-            <p class="section-sub">Academic foundation, international exchange, and technical support leadership.</p>
+            <p class="section-sub" id="background-sub">Academic foundation, international exchange, and technical support leadership.</p>
           </div>
         </div>
 
@@ -251,7 +270,7 @@
         <div class="contact-layout">
           <div class="contact-intro">
             <h2 class="section-title" id="contact-heading">Resume &amp; Contact</h2>
-            <p class="section-sub">
+            <p class="section-sub" id="contact-sub">
               Open to student and junior engineering roles in RTL design, formal/pre-silicon verification, post-silicon validation, and low-level systems.
             </p>
           </div>
@@ -259,11 +278,11 @@
           <div class="contact-list">
             <div class="contact-row">
               <div>
-                <span class="contact-label">Resume</span>
-                <span class="contact-value" id="resume-status-badge">PDF Available</span>
+                <span class="contact-label" id="contact-resume-label">Resume</span>
+                <span class="contact-value" id="resume-status-badge">PDF (1 page)</span>
               </div>
               <div class="contact-row-actions">
-                <button class="btn btn-sm btn-primary resume-trigger" type="button">Open PDF</button>
+                <button class="btn btn-sm btn-primary resume-trigger" id="contact-open-pdf-btn" type="button">Open PDF</button>
                 <a class="btn btn-sm btn-outline hidden" id="resume-download-link" href="assets/Tomer_Buda_Resume.pdf" download>
                   Download
                 </a>
@@ -272,17 +291,18 @@
 
             <div class="contact-row">
               <div>
-                <span class="contact-label">Email</span>
-                <a class="contact-value contact-link" id="email-link" href="mailto:tomerbuda214@gmail.com">tomerbuda214@gmail.com</a>
+                <span class="contact-label" id="contact-email-label">Email</span>
+                <a class="contact-value contact-link ltr-inline" dir="ltr" id="email-link" href="mailto:tomerbuda214@gmail.com">tomerbuda214@gmail.com</a>
               </div>
               <button class="btn btn-sm btn-outline" id="copy-email-btn" type="button">Copy</button>
             </div>
 
             <div class="contact-row">
               <div>
-                <span class="contact-label">LinkedIn</span>
+                <span class="contact-label" id="contact-linkedin-label">LinkedIn</span>
                 <a
-                  class="contact-value contact-link linkedin-link"
+                  class="contact-value contact-link ltr-inline linkedin-link"
+                  dir="ltr"
                   id="linkedin-handle"
                   href="https://www.linkedin.com/in/tomer-buda/"
                   target="_blank"
@@ -293,6 +313,7 @@
               </div>
               <a
                 class="btn btn-sm btn-outline linkedin-link"
+                id="contact-linkedin-visit"
                 href="https://www.linkedin.com/in/tomer-buda/"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -303,9 +324,10 @@
 
             <div class="contact-row">
               <div>
-                <span class="contact-label">GitHub</span>
+                <span class="contact-label" id="contact-github-label">GitHub</span>
                 <a
-                  class="contact-value contact-link github-link"
+                  class="contact-value contact-link ltr-inline github-link"
+                  dir="ltr"
                   id="github-handle"
                   href="https://github.com/Tomer-Buda"
                   target="_blank"
@@ -316,6 +338,7 @@
               </div>
               <a
                 class="btn btn-sm btn-outline github-link"
+                id="contact-github-visit"
                 href="https://github.com/Tomer-Buda"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -358,12 +381,12 @@
     </div>
   </div>
 
-  <!-- Resume Fallback Modal (used only if PDF cannot be loaded) -->
+  <!-- Resume Fallback Modal -->
   <div class="modal-backdrop hidden" id="resume-modal" role="dialog" aria-modal="true" aria-labelledby="resume-modal-title">
     <div class="modal-sheet modal-sheet-resume">
       <div class="modal-header">
         <div>
-          <span class="modal-eyebrow">Curriculum Vitae</span>
+          <span class="modal-eyebrow" id="resume-modal-eyebrow">Curriculum Vitae</span>
           <h2 class="modal-title" id="resume-modal-title">Tomer I. Buda — Resume</h2>
         </div>
         <div class="modal-header-actions">
@@ -400,6 +423,6 @@
   <!-- Toast -->
   <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
 
-  <script type="module" src="js/app.js?v=20261124b"></script>
+  <script type="module" src="js/app.js?v=20261125"></script>
 </body>
 </html>
